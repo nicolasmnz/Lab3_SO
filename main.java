@@ -1,11 +1,11 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-
-
+import java.lang.Thread;
 class MultiplicarFila extends Thread {
     private int[] fila;
     private int[][] matrizM;
@@ -19,7 +19,7 @@ class MultiplicarFila extends Thread {
         this.resultado= new int[matrizM[0].length];
     }
 
-    public void run() {
+    @Override public void run() {
         int nfila=fila.length;
         int columna=matrizM[0].length;
 
@@ -41,21 +41,14 @@ class MultiplicarFila extends Thread {
     }
 }
 
-
-
 public class main {
-
-
         public static void main(String[] args) throws InterruptedException {
-
-        System.out.println("¡Hola, mundo!");
         try{
-            File archivo = new File("entrada.txt");
+            File archivo = new File("entrada.txt"); // Archivo necesario para la ejecucion
             boolean verificacion = archivo.canRead();
-            if (verificacion){
-                System.out.println("El archivo se puede leer.");
-                Scanner lector = new Scanner(archivo);
-                int totalMatrices = Integer.parseInt(lector.nextLine().trim());
+            if (verificacion){ // verifica si existe el archivo
+                Scanner lector = new Scanner(archivo); 
+                int totalMatrices = Integer.parseInt(lector.nextLine().trim()); // se lee el numero totales de matrices 
                 List<int[][]> matrices = new ArrayList<>(totalMatrices);
                 while(lector.hasNextLine()){
                     // Saltar líneas vacías
@@ -79,67 +72,58 @@ public class main {
                             matriz[i][j] = Integer.parseInt(datos[j]);
                         }
                     }
-                    matrices.add(matriz);   
+                    matrices.add(matriz); //añade a la matriz al arreglo   
                 }
 
+                lector.close(); // se cierra el scanner por buenas practicas 
+
+                long duracionMs;
+                int [][] matrizC;
                 for(int indice=1; indice<totalMatrices;indice++){
                     // Se fija la matriz 0 para hacer todos los calculos 
                     int filaA=Fila(matrices.get(0));
                     int columnaA =Columna(matrices.get(0));
-
                     int filaB=Fila(matrices.get(indice));
                     int columnaB=Columna(matrices.get(indice));
-
-
-
-
-                        System.out.println("A:");
-                        for (int[] fila : matrices.get(0)) {
-                            for (int val : fila) {
-                                System.out.print(val + " ");
-                            }
-                            System.out.println();
-                        }
-
-                        System.out.println("B:");
-                        for (int[] fila : matrices.get(indice)) {
-                            for (int val : fila) {
-                                System.out.print(val + " ");
-                            }
-                            System.out.println();
-                        }
-
-
-
-                    System.out.println("filaA=" + filaA + ", columnaA=" + columnaA + ", filaB=" + filaB + ", columnaB=" + columnaB);
-
-
-
                     if (columnaA == filaB){ // condicion para multiplicar 2 matrices 
-                        System.out.println("se puede multiplicar"); 
-                        int [][] matrizC = new int [filaA][columnaB] ;
-
+                        matrizC = new int [filaA][columnaB] ; 
+                        long [] tiempos = new long[filaA];
                         MultiplicarFila[] hebras = new MultiplicarFila[filaA];
-
+                        long inicio_matriz= System.nanoTime();
                         for (int i = 0; i < filaA; i++) {
                             hebras[i] = new MultiplicarFila(matrices.get(0)[i], matrices.get(indice), i);
+                            tiempos[i]= System.nanoTime();
                             hebras[i].start();
                         }
 
                         for (int i = 0; i < filaA; i++) {
                             hebras[i].join();
                             matrizC[hebras[i].getFilaIndice()] = hebras[i].getResultado();
+                            long tiempo_hebra=System.nanoTime();
+                            //System.out.println("Duró: " + (tiempo_hebra - tiempos[i]) / 1_000_000 + " ms");
 
                         }
                         // Se termina la multiplicacion de las matrices y al mismo tiempo se hace un remplazo de los valores
+                        long fin_matriz = System.nanoTime();
+                        duracionMs= ((fin_matriz - inicio_matriz) / 1_000_000);
 
-                        System.out.println("Resultado de la multiplicación:");
-                        for (int[] fila : matrizC) {
-                            for (int val : fila) {
-                                System.out.print(val + " ");
+                        try (FileWriter writer = new FileWriter("Thread.txt", true)) {
+                            writer.write("Resultado de la multiplicación (matriz #" + indice + "):\n");
+
+                            for (int[] fila : matrizC) {
+                                for (int val : fila) {
+                                    writer.write(val + " ");
+                                }
+                                writer.write("\n");
                             }
-                            System.out.println();
+
+                            writer.write("Tiempo de ejecución: " + duracionMs + " ms\n\n");
+                            writer.write("La matriz resultante es transpuesta: " + trasnpuesta(matrizC) + "\n");
+
+                        } catch (IOException e) {
+                            System.out.println("Error al escribir en el archivo: " + e.getMessage());
                         }
+
 
                         // se rempliza la matriz A por la resultante C para hacer el siguiente calculo 
                         matrices.set(0, matrizC);
@@ -149,11 +133,9 @@ public class main {
                     }else{
                         System.out.println("no se puede multiplicar");
                     }
+
+
                 }
-
-
-
-
 
             }else{
                 System.out.println("No se puede leer el archivo o no existe.");
@@ -166,10 +148,29 @@ public class main {
 
     }
 
+
+// Funciones Auxiliares
+
+
+/**
+ * Verifica si una matriz cuadrada es simétrica respecto a su diagonal principal.
+ *
+ * @param matriz La matriz bidimensional de enteros.
+ * @return el numero de filas de la matriz .
+ * @throws IllegalArgumentException si la matriz es {@code null}.
+ **/
 static int Fila(int[][] matriz) {
     return matriz.length;
 }
 
+
+/**
+ * Verifica si una matriz cuadrada es simétrica respecto a su diagonal principal.
+ *
+ * @param matriz La matriz bidimensional de enteros.
+ * @return El valor de numero de columnas de la matriz.
+ * @throws IllegalArgumentException si la matriz es {@code null}.
+ **/
 static int Columna(int[][] matriz) {
     if (matriz.length > 0) {
         return matriz[0].length;
@@ -178,6 +179,13 @@ static int Columna(int[][] matriz) {
     }
 }
 
+/**
+ * Verifica si una matriz cuadrada es simétrica respecto a su diagonal principal.
+ *
+ * @param matriz La matriz bidimensional de enteros.
+ * @return {@code true} si es igual a su transpuesta; {@code false} en caso contrario.
+ * @throws IllegalArgumentException si la matriz es {@code null}.
+ **/
 static boolean trasnpuesta(int[][] matriz) {
     int filas = Fila(matriz);
     int columnas = Columna(matriz);
