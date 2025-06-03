@@ -50,15 +50,20 @@ int **leerMatriz(FILE *f, int *rows, int *columns)
 
 int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, int columnB)
 {
+    if (columnA != rowB)
+    {
+        printf("Error: Dimesiones no compatibles");
+        return NULL;
+    }
     // Reservar memoria para matriz resultante
     int **matrizC = (int **)malloc(rowA * sizeof(int *));
     for (int i = 0; i < rowA; i++)
     {
-        matrizC = (int *)malloc(columnB * sizeof(int));
+        matrizC[i] = (int *)malloc(columnB * sizeof(int));
     }
     // Pipes y PIDs
-    int *from_child[2] = (int *)malloc(rowA * sizeof(int[2])); // PIPE para hijo escriba, padre lee
-    pid_t *pids = (pid_t)malloc(rowA * sizeof(pid_t));
+    int (*from_child)[2] = malloc(rowA * sizeof(int[2])); // PIPE para hijo escriba, padre lee
+    pid_t *pids = (pid_t *)malloc(rowA * sizeof(pid_t));
     // ============================== fork =======================================
     for (int i = 0; i < rowA; i++)
     {
@@ -103,6 +108,7 @@ int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, 
         }
         close(from_child[i][0]);
     }
+    return matrizC;
 }
 
 int main()
@@ -118,8 +124,13 @@ int main()
 
     fclose(fptr);
 
+    int **matrizC = multMatriz(matrizA, matrizB, m, n, p, q);
+
     printMatriz(matrizA, m, n);
     printMatriz(matrizB, p, q);
+    if (matrizC != NULL)
+        printMatriz(matrizC, m, q);
+
     return 0;
 }
 
