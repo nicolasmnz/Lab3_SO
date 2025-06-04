@@ -8,8 +8,11 @@ La tarea es hacer un informe para responder una serie de preguntas sobre la dife
 ## Contenido
 * `LAB3_Munoz_Rojo.c` - Código fuente principal en C
 * `LAB3_Munoz_Rojo.java` - Código fuente principal en java
+* `LAB3_Munoz_Rojo_b.java` - Código fuente principal para el Bonus en java
 * `Makefile` - Script de compilación (`make`, `make run`, `make clean`)
 * `Readme.md` - Documentación
+
+
 
 ## Características
 * Usando librerias de lecturas de archivos vamos a extraer multiples matrices 
@@ -19,7 +22,7 @@ La tarea es hacer un informe para responder una serie de preguntas sobre la dife
 
 ## Supuestos
 * NO habran matrices de 0x0
-* Todos lo archivos tendran almenos 2 matrices
+* Todos lo archivos tendran al menos 2 matrices
 
 
 

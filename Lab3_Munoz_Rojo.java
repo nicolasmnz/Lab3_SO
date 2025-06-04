@@ -19,7 +19,7 @@ class MultiplicarFila extends Thread {
         this.resultado= new int[matrizM[0].length];
     }
 
-    @Override public void run() {
+    public void run() {
         int nfila=fila.length;
         int columna=matrizM[0].length;
 
@@ -41,7 +41,7 @@ class MultiplicarFila extends Thread {
     }
 }
 
-public class main {
+public class Lab3_Munoz_Rojo {
         public static void main(String[] args) throws InterruptedException {
         try{
             File archivo = new File("entrada.txt"); // Archivo necesario para la ejecucion
@@ -118,7 +118,6 @@ public class main {
                             }
 
                             writer.write("Tiempo de ejecución: " + duracionMs + " ms\n\n");
-                            writer.write("La matriz resultante es transpuesta: " + trasnpuesta(matrizC) + "\n");
 
                         } catch (IOException e) {
                             System.out.println("Error al escribir en el archivo: " + e.getMessage());
@@ -177,32 +176,6 @@ static int Columna(int[][] matriz) {
     } else {
         return 0; // O puedes lanzar una excepción si prefieres
     }
-}
-
-/**
- * Verifica si una matriz cuadrada es simétrica respecto a su diagonal principal.
- *
- * @param matriz La matriz bidimensional de enteros.
- * @return {@code true} si es igual a su transpuesta; {@code false} en caso contrario.
- * @throws IllegalArgumentException si la matriz es {@code null}.
- **/
-static boolean trasnpuesta(int[][] matriz) {
-    int filas = Fila(matriz);
-    int columnas = Columna(matriz);
-
-    if (filas != columnas) {
-        return false; // Una matriz no cuadrada no puede ser simétrica
-    }
-
-    for (int i = 0; i < filas; i++) {
-        for (int j = 0; j < columnas; j++) {
-            if (matriz[i][j] != matriz[j][i]) {
-                return false;
-            }
-        }
-    }
-
-    return true;
 }
 
     
