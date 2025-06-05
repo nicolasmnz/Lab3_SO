@@ -1,4 +1,4 @@
-CC := gcc
+CC 		:= gcc
 CFLAGS  := -Wall -Wextra -g
 
 SRCS 	:= main.c
@@ -9,7 +9,7 @@ JAVA = java
 JAVA_SOURCE = Main.java
 JAVA_CLASS = Main
 
-.PHONY: all cpp java run-ccc run-java clean
+.PHONY: all cc java run-c run-java clean
 
 all: cc java
 
@@ -19,10 +19,10 @@ cc: $(SRCS)
 java: $(JAVA_SOURCE)
 	$(JAVAC) $(JAVA_SOURCE)
 
-run-cpp: cpp
-	./$(CPP_TARGET)
+c-run: cc
+	./$(TARGET)
 
-run-java: java
+java-run: java
 	$(JAVA) $(JAVA_CLASS)
 
 clean:
