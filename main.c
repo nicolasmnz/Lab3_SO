@@ -211,26 +211,28 @@ int main() {
         getrusage(RUSAGE_SELF, &uso_fin);
     
         // calculo de metricas
-        double wall = tiempoEnSegundos(inicio_wall, fin_wall);
-    
-        double cpu_user = (uso_fin.ru_utime.tv_sec - uso_inicio.ru_utime.tv_sec)
-                        + (uso_fin.ru_utime.tv_usec - uso_inicio.ru_utime.tv_usec) / 1e6;
-        double cpu_sys  = (uso_fin.ru_stime.tv_sec - uso_inicio.ru_stime.tv_sec)
-                        + (uso_fin.ru_stime.tv_usec - uso_inicio.ru_stime.tv_usec) / 1e6;
-        double cpu_total = cpu_sys + cpu_user;
-        double porc_cpu = (wall > 0) ? (100.0 * cpu_total/ wall) : 0.0;
-        long memoria_kb = uso_fin.ru_maxrss;
+        if (matrizC != NULL) {
+            double wall = tiempoEnSegundos(inicio_wall, fin_wall);
         
-        // registrar mediciones
-        fprintf(csv, "%s,%.6f,%.6f,%.6f,%.6f,%.1f,%ld\n",
-                path,
-                wall,       // Tiempo real (wall clock)
-                cpu_user,   // Tiempo CPU user
-                cpu_sys,    // Tiempo CPU sys
-                cpu_total,  // Tiempo CPU total
-                porc_cpu,   // Porcentaje de uso aproximado de CPU
-                memoria_kb  // Uso máximo de memoria (resident set size)
-        );
+            double cpu_user = (uso_fin.ru_utime.tv_sec - uso_inicio.ru_utime.tv_sec)
+                            + (uso_fin.ru_utime.tv_usec - uso_inicio.ru_utime.tv_usec) / 1e6;
+            double cpu_sys  = (uso_fin.ru_stime.tv_sec - uso_inicio.ru_stime.tv_sec)
+                            + (uso_fin.ru_stime.tv_usec - uso_inicio.ru_stime.tv_usec) / 1e6;
+            double cpu_total = cpu_sys + cpu_user;
+            double porc_cpu = (wall > 0) ? (100.0 * cpu_total/ wall) : 0.0;
+            long memoria_kb = uso_fin.ru_maxrss;
+            
+            // registrar mediciones
+            fprintf(csv, "%s,%.6f,%.6f,%.6f,%.6f,%.1f,%ld\n",
+                    path,
+                    wall,       // Tiempo real (wall clock)
+                    cpu_user,   // Tiempo CPU user
+                    cpu_sys,    // Tiempo CPU sys
+                    cpu_total,  // Tiempo CPU total
+                    porc_cpu,   // Porcentaje de uso aproximado de CPU
+                    memoria_kb  // Uso máximo de memoria (resident set size)
+            );
+        }
         
         
         printMatriz(matrizA, m, n);
