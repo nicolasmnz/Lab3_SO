@@ -11,8 +11,7 @@
 
 void printMatriz(int **matriz, int rows, int columns) {
     printf("Matriz (%d x %d):\n", rows, columns);
-    for (int i = 0; i < rows; i++)
-    {
+    for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++)
         {
             printf("%d ", matriz[i][j]);
@@ -22,12 +21,11 @@ void printMatriz(int **matriz, int rows, int columns) {
     return;
 }
 
-
 double tiempoEnSegundos(struct timespec inicio, struct timespec fin) {
     return (fin.tv_sec - inicio.tv_sec) + (fin.tv_nsec - inicio.tv_nsec) / 1e9;
 }
 
-char** listarArchivos_tests(const char* rutaDir, int* numArchivos) {
+char **listarArchivos_tests(const char* rutaDir, int* numArchivos) {
     DIR *dir = opendir(rutaDir);
 
     int capacidad = 100;
@@ -65,7 +63,7 @@ char** listarArchivos_tests(const char* rutaDir, int* numArchivos) {
 int **leerMatriz(FILE *f, int *rows, int *columns) {
     char linea[100];
 
-    // leeo la primera linea para definir rows y columns
+    // leo la primera linea para definir rows y columns
     fgets(linea, sizeof(linea), f);
     sscanf(linea, "%d %d", rows, columns);
 
@@ -98,10 +96,8 @@ void eliminarMatriz(int **Matriz, int rows) {
     return;
 }
 
-int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, int columnB)
-{
-    if (columnA != rowB)
-    {
+int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, int columnB) {
+    if (columnA != rowB) {
         printf("Error: Dimesiones no compatibles");
         return NULL;
     }
@@ -160,11 +156,11 @@ int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, 
     return matrizC;
 }
 
-void escribirMatriz(int** matrizC, int row, int column, const char* nombreArchivo) {
+void escribirMatriz(int** matriz, int row, int column, const char* nombreArchivo) {
     // dar nombre formateado al archivo de salida
     size_t len_nombreArchivo = strlen(nombreArchivo);
     size_t len_ruta = strlen("./salidaFork/salidaFork_");
-    char *path = (char*)malloc(len_ruta + len_nombreArchivo); //revisar
+    char *path = (char*)malloc(len_ruta + len_nombreArchivo);    //revisar
     sprintf(path, "./salidaFork/salidaFork_%s", nombreArchivo);
 
     // crear archivo
@@ -174,7 +170,7 @@ void escribirMatriz(int** matrizC, int row, int column, const char* nombreArchiv
     
     for (int i = 0; i< row; i++) {
         for (int j = 0; j < column; j++) {
-            fprintf(salida, "%d ", matrizC[i][j]);
+            fprintf(salida, "%d ", matriz[i][j]);
         }
         fprintf(salida, "\n");
     }
@@ -189,8 +185,8 @@ int main() {
     int numArchivos; 
     char **archivos = listarArchivos_tests("./pruebas", &numArchivos);
 
-    // abrir CSV para registrar resutaldos
-    FILE *csv = fopen("C_measurements.csv", "w");
+    // abrir CSV para registrar resuldos
+    FILE *csv = fopen("./measurements/C_measurements.csv", "w");
     fprintf(csv, "archivo,wall_time-s,user_time-s,sys_time-s,cpu_total-s,percent_cpu,mem_rss-kb\n");
     fflush(csv); // se libera el buffer para no tener problemas con el fork, Header repetido
 
@@ -261,7 +257,7 @@ int main() {
         }
         
         // guardar matriz en salidasFork
-        escribirMatriz(matrizC, m, q, nombreArchivo);
+        if (matrizC != NULL) escribirMatriz(matrizC, m, q, nombreArchivo);
 
         printMatriz(matrizA, m, n);
         printMatriz(matrizB, p, q);
