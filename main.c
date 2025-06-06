@@ -40,12 +40,11 @@ char** listarArchivos_tests(const char* rutaDir, int* numArchivos) {
         // Saltar "." y ".."
         if (strcmp(archivo->d_name, ".") == 0 || strcmp(archivo->d_name, "..") == 0) continue;
         
-        // Obtenemos nombre del path de archivo
-        size_t lenDir  = strlen(rutaDir); // se obitiene el tamanio de rutaDir
-        size_t lenName = strlen(archivo->d_name); // se obitiene el tamanio de nombre archivo
-        char *pathCompleto = malloc(lenDir + 1 + lenName + 1);
+        // Obtenemos nombre del archivo
+        size_t lenName = strlen(archivo->d_name); // se obtiene el tamanio de nombre archivo
+        char *pathCompleto = malloc(lenName + 1);
 
-        sprintf(pathCompleto, "%s/%s", rutaDir, archivo->d_name); // dar formato al al nombre del archivo
+        sprintf(pathCompleto, "%s", archivo->d_name); // dar formato al nombre del archivo
 
         if (count >= capacidad) {
             // se agranda si no hay suficiente espacio con realloc
@@ -55,7 +54,7 @@ char** listarArchivos_tests(const char* rutaDir, int* numArchivos) {
         }
         lista[count++] = pathCompleto; //entra en lista[count] y luego incrementa count
     }
-    
+
     closedir(dir);
     *numArchivos = count;
 
@@ -63,8 +62,7 @@ char** listarArchivos_tests(const char* rutaDir, int* numArchivos) {
 }
 
 
-int **leerMatriz(FILE *f, int *rows, int *columns)
-{
+int **leerMatriz(FILE *f, int *rows, int *columns) {
     char linea[100];
 
     // leeo la primera linea para definir rows y columns
@@ -73,14 +71,12 @@ int **leerMatriz(FILE *f, int *rows, int *columns)
 
     // Reservo memoria
     int **Matriz = (int **)malloc((*rows) * sizeof(int *));
-    for (int i = 0; i < (*rows); i++)
-    {
+    for (int i = 0; i < (*rows); i++) {
         Matriz[i] = (int *)malloc((*columns) * sizeof(int));
     }
 
     // Obtener cada elemento de la fila por delimitadores
-    for (int i = 0; i < (*rows); i++)
-    {
+    for (int i = 0; i < (*rows); i++) {
         fgets(linea, 100, f);
         char *token = strtok(linea, " \t\r\n");
         for (int j = 0; j < (*columns); j++)
@@ -94,8 +90,7 @@ int **leerMatriz(FILE *f, int *rows, int *columns)
 }
 
 void eliminarMatriz(int **Matriz, int rows) {
-    for (int i = 0; i < rows; i++)
-    {
+    for (int i = 0; i < rows; i++) {
         free(Matriz[i]);
     }
     free(Matriz);
@@ -165,9 +160,33 @@ int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, 
     return matrizC;
 }
 
+void escribirMatriz(int** matrizC, int row, int column, const char* nombreArchivo) {
+    // dar nombre formateado al archivo de salida
+    size_t len_nombreArchivo = strlen(nombreArchivo);
+    size_t len_ruta = strlen("./salidaFork/salidaFork_");
+    char *path = (char*)malloc(len_ruta + len_nombreArchivo); //revisar
+    sprintf(path, "./salidaFork/salidaFork_%s", nombreArchivo);
+
+    // crear archivo
+    FILE *salida = fopen(path, "w");
+
+    fprintf(salida, "%d %d\n", row, column);
+    
+    for (int i = 0; i< row; i++) {
+        for (int j = 0; j < column; j++) {
+            fprintf(salida, "%d ", matrizC[i][j]);
+        }
+        fprintf(salida, "\n");
+    }
+
+    fclose(salida);
+
+    return;
+}
+
 int main() {
     // busco todos los archivos de prueba
-    int numArchivos;
+    int numArchivos; 
     char **archivos = listarArchivos_tests("./pruebas", &numArchivos);
 
     // abrir CSV para registrar resutaldos
@@ -177,7 +196,14 @@ int main() {
 
     // itero sobre la lista de nombres de los archivos
     for (int i = 0; i < numArchivos; i++) {
-        const char *path = archivos[i];
+        // preparo ruta
+        char *carpeta = "./pruebas/";
+        size_t len_carpeta = strlen(carpeta);
+        const char *nombreArchivo = archivos[i];
+        size_t len_nombreArchivo = strlen(nombreArchivo);
+
+        char *path = (char*)malloc(len_carpeta + len_nombreArchivo);
+        sprintf(path, "%s%s", carpeta, nombreArchivo);
 
         // abro el archivo
         FILE *fptr;
@@ -234,7 +260,9 @@ int main() {
             );
         }
         
-        
+        // guardar matriz en salidasFork
+        escribirMatriz(matrizC, m, q, nombreArchivo);
+
         printMatriz(matrizA, m, n);
         printMatriz(matrizB, p, q);
         if (matrizC != NULL) printMatriz(matrizC, m, q);
