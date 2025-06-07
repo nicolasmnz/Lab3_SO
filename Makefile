@@ -1,29 +1,45 @@
-CC 		:= gcc
-CFLAGS  := -Wall -Wextra -g
+CC 		  := gcc
+CFLAGS    := -Wall -Wextra -g
 
-SRCS 	:= main.c
-TARGET	:= main
+JAVAC 	  := javac
+JAVA 	  := java
+#--------------------------------------------
+C_SRCS    := main.c main_bonus.c
+C_OBJS    := $(C_SRCS:.c=.o)
+C_HDRS    := main.h main_bonus.h
 
-JAVAC = javac
-JAVA = java
-JAVA_SOURCE = Main.java
-JAVA_CLASS = Main
-
-.PHONY: all cc java run-c run-java clean
+C_TARGETS := main main_bonus
+#-------------------------------------------
+.PHONY: all cc java run-c run-bonus-c run-java run-bonus-java clean
 
 all: cc java
+#------------------------------------------
+cc: $(C_TARGETS)
 
-cc: $(SRCS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS)
+main: main.o
+	$(CC) $(CFLAGS) -o $@ $^ 
 
-java: $(JAVA_SOURCE)
-	$(JAVAC) $(JAVA_SOURCE)
+main_bonus: main_bonus.o
+	$(CC) $(CFLAGS) -o $@ $^
 
-c-run: cc
-	./$(TARGET)
+# Regla para compilar cualquier .c a .o
+%.o: %.c $(C_HDRS)
+	$(CC) $(CFLAGS) -c $< -o $@
+#------------------------------------------
+JAVA_SRCS   := Main.java
+JAVA_CLASSES:= $(JAVA_SRCS:.java=.class)
+#------------------------------------------
+java: $(JAVA_SRCS)
+	$(JAVAC) $(JAVA_SRCS)
+#-----------------------------------------
+run-c: main
+	./main
 
-java-run: java
-	$(JAVA) $(JAVA_CLASS)
+run-bonus-c: main_bonus
+	./main_bonus
 
+run-java: $(JAVA_CLASSES)
+	$(JAVA) Main
+#-----------------------------------------
 clean:
-	rm -f $(CPP_TARGET) *.class
+	rm -f *.o $(C_TARGETS) *.class
