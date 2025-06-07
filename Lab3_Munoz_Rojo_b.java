@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.lang.Thread;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 class MultiplicarFila extends Thread {
     private int[] fila;
     private int[][] matrizM;
@@ -77,7 +79,6 @@ public class Lab3_Munoz_Rojo_b {
 
                 lector.close(); // se cierra el scanner por buenas practicas 
                 
-                System.out.println(Validacion(matrices, totalMatrices));
                 long duracionMs;
                 int [][] matrizC;
                 for(int indice=1; indice<totalMatrices;indice++){
@@ -86,29 +87,46 @@ public class Lab3_Munoz_Rojo_b {
                     int columnaA =Columna(matrices.get(0));
                     int filaB=Fila(matrices.get(indice));
                     int columnaB=Columna(matrices.get(indice));
-                    if (columnaA == filaB){ // condicion para multiplicar 2 matrices 
+
+                    boolean validacion_total=Validacion(matrices, totalMatrices);
+
+                    if (validacion_total){ // condicion para multiplicar 2 matrices 
                         matrizC = new int [filaA][columnaB] ; 
                         long [] tiempos = new long[filaA];
                         MultiplicarFila[] hebras = new MultiplicarFila[filaA];
+
                         long inicio_matriz= System.nanoTime();
+                        Runtime runtime = Runtime.getRuntime();
+                        runtime.gc(); // Limpiar lo más posible para no arruinar la relacion
+                        long memoria_inicial = runtime.totalMemory() - runtime.freeMemory(); // memoria destinada - la disponible
+                        ThreadMXBean gestion = ManagementFactory.getThreadMXBean(); 
+                        long cpu_inicial = gestion.getCurrentThreadCpuTime(); //
+
                         for (int i = 0; i < filaA; i++) {
                             hebras[i] = new MultiplicarFila(matrices.get(0)[i], matrices.get(indice), i);
-                            tiempos[i]= System.nanoTime();
                             hebras[i].start();
                         }
 
                         for (int i = 0; i < filaA; i++) {
                             hebras[i].join();
                             matrizC[hebras[i].getFilaIndice()] = hebras[i].getResultado();
-                            long tiempo_hebra=System.nanoTime();
                             //System.out.println("Duró: " + (tiempo_hebra - tiempos[i]) / 1_000_000 + " ms");
 
                         }
+
                         // Se termina la multiplicacion de las matrices y al mismo tiempo se hace un remplazo de los valores
                         long fin_matriz = System.nanoTime();
-                        duracionMs= ((fin_matriz - inicio_matriz) / 1_000_000);
+                        long memoria_final = runtime.totalMemory() - runtime.freeMemory();
+                        long cpu_final = gestion.getCurrentThreadCpuTime();
+
+
+
+                        long tiempo_total_ = fin_matriz - inicio_matriz;
+                        long memoria_usada = memoria_final - memoria_inicial;
+                        long cpu_usado = cpu_final - cpu_inicial;
 
                         try (FileWriter writer = new FileWriter("Thread.txt", true)) {
+                            writer.write("\n");
                             writer.write("Resultado de la multiplicación (matriz #" + indice + "):\n");
 
                             for (int[] fila : matrizC) {
@@ -117,9 +135,11 @@ public class Lab3_Munoz_Rojo_b {
                                 }
                                 writer.write("\n");
                             }
+                            writer.write("Tiempo de ejecución: " + tiempo_total_ + " ms\n");
+                            writer.write("Memoria usada en ejecución: " + memoria_usada +"\n");
+                            writer.write("Cpu usada en la ejecucion: " + cpu_usado +"\n");
+                            writer.write("\n");
 
-                            writer.write("Tiempo de ejecución: " + duracionMs + " ms\n\n");
-                            writer.write("La matriz resultante es transpuesta: " + trasnpuesta(matrizC) + "\n");
 
                         } catch (IOException e) {
                             System.out.println("Error al escribir en el archivo: " + e.getMessage());

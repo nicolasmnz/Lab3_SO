@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.lang.Thread;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 class MultiplicarFila extends Thread {
     private int[] fila;
     private int[][] matrizM;
@@ -47,9 +49,11 @@ public class Lab3_Munoz_Rojo {
             File archivo = new File("entrada.txt"); // Archivo necesario para la ejecucion
             boolean verificacion = archivo.canRead();
             if (verificacion){ // verifica si existe el archivo
+
                 Scanner lector = new Scanner(archivo); 
                 int totalMatrices = Integer.parseInt(lector.nextLine().trim()); // se lee el numero totales de matrices 
                 List<int[][]> matrices = new ArrayList<>(totalMatrices);
+
                 while(lector.hasNextLine()){
                     // Saltar líneas vacías
                     String linea = "";
@@ -63,16 +67,19 @@ public class Lab3_Munoz_Rojo {
                     String[] partes = linea.split(" ");
                     int filas = Integer.parseInt(partes[0]);
                     int columnas = Integer.parseInt(partes[1]);
+
                     // Leer matriz
                     int[][] matriz = new int[filas][columnas];
+
                     for (int i = 0; i < filas; i++) {
                         if (!lector.hasNextLine()) break;
                         String[] datos = lector.nextLine().trim().split(" ");
                         for (int j = 0; j < columnas; j++) {
-                            matriz[i][j] = Integer.parseInt(datos[j]);
+                            matriz[i][j] = Integer.parseInt(datos[j]); //recorre el el dato y lo castea como integrer
                         }
                     }
                     matrices.add(matriz); //añade a la matriz al arreglo   
+
                 }
 
                 lector.close(); // se cierra el scanner por buenas practicas 
@@ -83,31 +90,47 @@ public class Lab3_Munoz_Rojo {
                     // Se fija la matriz 0 para hacer todos los calculos 
                     int filaA=Fila(matrices.get(0));
                     int columnaA =Columna(matrices.get(0));
+                    // se obtine la dimension de la segunda matriz 1
                     int filaB=Fila(matrices.get(indice));
                     int columnaB=Columna(matrices.get(indice));
-                    if (columnaA == filaB){ // condicion para multiplicar 2 matrices 
+
+                    if (columnaA == filaB){ // condicion para multiplicar 2 matrices  Si se cumple se 
+
                         matrizC = new int [filaA][columnaB] ; 
-                        long [] tiempos = new long[filaA];
                         MultiplicarFila[] hebras = new MultiplicarFila[filaA];
+
                         long inicio_matriz= System.nanoTime();
+                        Runtime runtime = Runtime.getRuntime();
+                        runtime.gc(); // Limpiar lo más posible para no arruinar la relacion
+                        long memoria_inicial = runtime.totalMemory() - runtime.freeMemory(); // memoria destinada - la disponible
+                        ThreadMXBean gestion = ManagementFactory.getThreadMXBean(); 
+                        long cpu_inicial = gestion.getCurrentThreadCpuTime(); //
+
+    
+
                         for (int i = 0; i < filaA; i++) {
                             hebras[i] = new MultiplicarFila(matrices.get(0)[i], matrices.get(indice), i);
-                            tiempos[i]= System.nanoTime();
                             hebras[i].start();
                         }
 
                         for (int i = 0; i < filaA; i++) {
                             hebras[i].join();
                             matrizC[hebras[i].getFilaIndice()] = hebras[i].getResultado();
-                            long tiempo_hebra=System.nanoTime();
-                            //System.out.println("Duró: " + (tiempo_hebra - tiempos[i]) / 1_000_000 + " ms");
-
                         }
                         // Se termina la multiplicacion de las matrices y al mismo tiempo se hace un remplazo de los valores
                         long fin_matriz = System.nanoTime();
-                        duracionMs= ((fin_matriz - inicio_matriz) / 1_000_000);
+                        long memoria_final = runtime.totalMemory() - runtime.freeMemory();
+                        long cpu_final = gestion.getCurrentThreadCpuTime();
 
+
+
+                        long tiempo_total_ = fin_matriz - inicio_matriz;
+                        long memoria_usada = memoria_final - memoria_inicial;
+                        long cpu_usado = cpu_final - cpu_inicial;
+
+                        // Se imprime la matriz para 
                         try (FileWriter writer = new FileWriter("Thread.txt", true)) {
+                            writer.write("\n");
                             writer.write("Resultado de la multiplicación (matriz #" + indice + "):\n");
 
                             for (int[] fila : matrizC) {
@@ -116,13 +139,14 @@ public class Lab3_Munoz_Rojo {
                                 }
                                 writer.write("\n");
                             }
-
-                            writer.write("Tiempo de ejecución: " + duracionMs + " ms\n\n");
+                            writer.write("Tiempo de ejecución: " + tiempo_total_ + " ms\n");
+                            writer.write("Memoria usada en ejecución: " + memoria_usada +"\n");
+                            writer.write("Cpu usada en la ejecucion: " + cpu_usado +"\n");
+                            writer.write("\n");
 
                         } catch (IOException e) {
                             System.out.println("Error al escribir en el archivo: " + e.getMessage());
                         }
-
 
                         // se rempliza la matriz A por la resultante C para hacer el siguiente calculo 
                         matrices.set(0, matrizC);
@@ -144,7 +168,6 @@ public class Lab3_Munoz_Rojo {
                 System.out.println("Archivo no encontrado: " + e.getMessage());
             }
 
-
     }
 
 
@@ -152,7 +175,7 @@ public class Lab3_Munoz_Rojo {
 
 
 /**
- * Verifica si una matriz cuadrada es simétrica respecto a su diagonal principal.
+ * Nos devuelve la dimension de la Fila de la matriz entregada.
  *
  * @param matriz La matriz bidimensional de enteros.
  * @return el numero de filas de la matriz .
@@ -164,7 +187,7 @@ static int Fila(int[][] matriz) {
 
 
 /**
- * Verifica si una matriz cuadrada es simétrica respecto a su diagonal principal.
+ * Nos devuelve la dimension de la Columna de la matriz entregada.
  *
  * @param matriz La matriz bidimensional de enteros.
  * @return El valor de numero de columnas de la matriz.
@@ -180,4 +203,3 @@ static int Columna(int[][] matriz) {
 
     
 }
-
