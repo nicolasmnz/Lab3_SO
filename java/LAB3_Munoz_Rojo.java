@@ -11,10 +11,10 @@ import java.util.Scanner;
 
 
 class MultiplicarFila extends Thread {
-    private int[] fila;
-    private int[][] matrizM;
-    private int[] resultado;
-    private int filaIndice;
+    private final int[] fila;
+    private final int[][] matrizM;
+    private final int[] resultado;
+    private final int filaIndice;
 
     public MultiplicarFila(int[] fila, int[][] matrizM, int filaIndice) {
         this.fila = fila;
@@ -23,7 +23,7 @@ class MultiplicarFila extends Thread {
         this.resultado= new int[matrizM[0].length];
     }
 
-    public void run() {
+    @Override public void run() {
         int nfila=fila.length;
         int columna=matrizM[0].length;
 
@@ -55,7 +55,7 @@ public class LAB3_Munoz_Rojo {
         
         try (FileWriter csvWriter = new FileWriter(csv, true)) {
             if (crearEncabezado) {
-                csvWriter.write("archivo,wall_time-s,user_time-s,sys_time-s,cpu_total-s,percent_cpu,mem_rss-kb\n");
+                csvWriter.write("num_fila,wall_time-s,user_time-s,sys_time-s,cpu_total-s,percent_cpu,mem_rss-kb\n");
             }
         }catch (IOException e) {
              System.out.println("Error al escribir en el archivo: " + e.getMessage());
@@ -169,8 +169,7 @@ public class LAB3_Munoz_Rojo {
                             System.out.println(nombre_archivo);
                             try (FileWriter writer = new FileWriter(nombre_archivo, true)) {
 
-                                writer.write(Fila(matrizC) +" "+ Columna(matrizC) + "\n");
-
+                                writer.write( Fila(matrizC) +" "+ Columna(matrizC) + "\n");
                                 for (int[] fila : matrizC) {
                                     for (int val : fila) {
                                         writer.write(val + " ");
@@ -185,10 +184,9 @@ public class LAB3_Munoz_Rojo {
                                 try (FileWriter csvWriter = new FileWriter(csv, true)) {
                                     // Si acabas de crear el archivo, añades antes el header (ya lo haces)
                                     // Ahora escribes la línea de datos:
-                                    String nombre_archivo_csv= String.format("./pruebas/%s", archivo.getName());
                                     csvWriter.write(String.format(
-                                        "%s,%.6f,%.6f,%.6f,%.6f,%.2f,%d\n",
-                                        nombre_archivo_csv,
+                                        "%d,%.6f,%.6f,%.6f,%.6f,%.2f,%d\n",
+                                        filaA,
                                         tiempo_total,
                                         cpu_usado,
                                         tiempo_cpu_sistema,
