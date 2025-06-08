@@ -4,45 +4,64 @@ CFLAGS    := -Wall -Wextra -g
 JAVAC 	  := javac
 JAVA 	  := java
 #--------------------------------------------
-C_SRCS    := LAB3_Munoz_Rojo_b.c LAB3_Munoz_Rojo.c
-C_OBJS    := $(C_SRCS:.c=.o)
-C_HDRS    := LAB3_Munoz_Rojo_b.h LAB3_Munoz_Rojo.h
-
-C_TARGETS := LAB3_Munoz_Rojo_b LAB3_Munoz_Rojo
+C_SRCS     := $(wildcard c/*.c)
+C_HDRS     := $(wildcard c/*.h)
+C_OBJS     := $(C_SRCS:.c=.o)
+C_TARGETS  := $(C_SRCS:.c=) 
 #-------------------------------------------
-.PHONY: all cc java run-c run-bonus-c run-java run-bonus-java clean clean-outputs
-
-all: cc java
+JAVA_SRCS    := $(wildcard java/*.java)    
+JAVA_CLASSES := $(JAVA_SRCS:.java=.class)   
+#-------------------------------------------
+.PHONY: all cprog javaprog run-c run-bonus-c run-java run-bonus-java clean clean-outputs
+#-------------------------------------------
+all: cprog javaprog
 #------------------------------------------
-cc: $(C_TARGETS)
+cprog: $(C_TARGETS)
 
-main: main.o
-	$(CC) $(CFLAGS) -o $@ $^ 
-
-main_bonus: main_bonus.o
-	$(CC) $(CFLAGS) -o $@ $^
+$(C_TARGETS): %: %.o
+	$(CC) $(CFLAGS) -o $@ $<
 
 # Regla para compilar cualquier .c a .o
 %.o: %.c $(C_HDRS)
 	$(CC) $(CFLAGS) -c $< -o $@
 #------------------------------------------
-JAVA_SRCS   := Main.java
-JAVA_CLASSES:= $(JAVA_SRCS:.java=.class)
-#------------------------------------------
-java: $(JAVA_SRCS)
-	$(JAVAC) $(JAVA_SRCS)
+javaprog: $(JAVA_CLASSES)
+
+# Compila cada .java y deja la .class en java/
+java/%.class: java/%.java
+	$(JAVAC) -d java $<
 #-----------------------------------------
-run-c: main
-	./main
+run-c: c/LAB3_Munoz_Rojo
+	@echo "Ejecutando LAB3_Munoz_Rojo.c:"; ./c/LAB3_Munoz_Rojo
 
-run-bonus-c: main_bonus
-	./main_bonus
+run-bonus-c: c/LAB3_Munoz_Rojo_b
+	@echo "Ejecutando LAB3_Munoz_Rojo_b.c:"; ./c/LAB3_Munoz_Rojo_b
 
-run-java: $(JAVA_CLASSES)
-	$(JAVA) Main
+run-java: javaprog
+	@echo "Ejecutando LAB3_Munoz_Rojo.java:"; $(JAVA) -cp java LAB3_Munoz_Rojo
+
+run-bonus-java: c/LAB3_Munoz_Rojo_b
+	@echo "Ejecutando LAB3_Munoz_Rojo_b.java:"; $(JAVA) -cp java LAB3_Munoz_Rojo_b
+
+
 #-----------------------------------------
 clean:
-	rm -f *.o $(C_TARGETS) *.class
+	rm -f ./c/*.o $(C_TARGETS) ./java/*.class
 
 clean-outputs:
 	rm -f ./salidaFork/*.txt ./salidaFork/bonus/*.txt || true
+#-------------------------------------------
+help:
+	@echo "Uso: make [target]"
+	@echo ""
+	@echo "Targets disponibles:"
+	@echo "  all               Compila C y Java"
+	@echo "  cprog             Sólo compila el código C"
+	@echo "  javaprog          Sólo compila el código Java"
+	@echo "  run-c             Ejecuta el programa principal en C"
+	@echo "  run-bonus-c       Ejecuta el programa bonus en C"
+	@echo "  run-java          Ejecuta el programa principal en Java"
+	@echo "  run-bonus-java    Ejecuta el programa bonus en Java"
+	@echo "  clean             Elimina objetos, binarios y clases compiladas"
+	@echo "  clean-outputs     Elimina archivos de salida generados"
+	@echo "  help              Muestra esta ayuda"
