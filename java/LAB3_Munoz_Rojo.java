@@ -49,8 +49,16 @@ public class LAB3_Munoz_Rojo {
     public static void main(String[] args) throws InterruptedException {
         File carpetaReportes = new File("./measurements");
         if (!carpetaReportes.exists()) carpetaReportes.mkdirs();
-            
+        
+
+
         File csv = new File("./measurements/java_measurements.csv");
+
+        // Si existe, eliminarlo
+        if (csv.exists()) {
+            csv.delete();
+        }
+        
         boolean crearEncabezado = !csv.exists(); // si el archivo no existe, escribir encabezado
         
         try (FileWriter csvWriter = new FileWriter(csv, true)) {
@@ -78,46 +86,45 @@ public class LAB3_Munoz_Rojo {
                 File archivo = new File(carpeta, archivo_nombre); 
                 
                 boolean verificacion = archivo.canRead();
-                if ((verificacion) ){ // verifica si existe el archivo
-
-                    Scanner lector = new Scanner(archivo); 
-                    int totalMatrices = 2; // se lee el numero totales de matrices 
-                    List<int[][]> matrices = new ArrayList<>(totalMatrices);
-                    while(lector.hasNextLine()){
-                        
-                        // Saltar líneas vacías
-                        String linea = "";
-                        
-                        while (lector.hasNextLine() && (linea = lector.nextLine().trim()).isEmpty()) {
-                            // skip
-                        }
-
-                        if (linea == null || linea.isEmpty()) break;
-
-                        // Leer dimensiones
-
-                        String[] partes = linea.split(" ");
-                        
-                        System.out.println(linea);
-                        int filas = Integer.parseInt(partes[0]);
-                        int columnas = Integer.parseInt(partes[1]);
-
-                        // Leer matriz
-                        int[][] matriz = new int[filas][columnas];
-
-
-                        for (int i = 0; i < filas; i++) {
-                            if (!lector.hasNextLine()) break;
-                            String[] datos = lector.nextLine().trim().split(" ");
-                            for (int j = 0; j < columnas; j++) {
-                                matriz[i][j] = Integer.parseInt(datos[j]); //recorre el el dato y lo castea como integrer
+                if ((verificacion) ){ 
+                    int totalMatrices;
+                    List<int[][]> matrices;
+                    try ( // verifica si existe el archivo
+                            Scanner lector = new Scanner(archivo)) {
+                        totalMatrices = 2; // se lee el numero totales de matrices
+                        matrices = new ArrayList<>(totalMatrices);
+                        while (lector.hasNextLine()) {
+                            // Saltar líneas vacías
+                            String linea = "";
+                            
+                            while (lector.hasNextLine() && (linea = lector.nextLine().trim()).isEmpty()) {
+                                // skip
                             }
+                            
+                            if (linea == null || linea.isEmpty()) break;
+                            
+                            // Leer dimensiones
+                            
+                            String[] partes = linea.split(" ");
+                            
+                            int filas = Integer.parseInt(partes[0]);
+                            int columnas = Integer.parseInt(partes[1]);
+                            
+                            // Leer matriz
+                            int[][] matriz = new int[filas][columnas];
+                            
+                            
+                            for (int i = 0; i < filas; i++) {
+                                if (!lector.hasNextLine()) break;
+                                String[] datos = lector.nextLine().trim().split(" ");
+                                for (int j = 0; j < columnas; j++) {
+                                    matriz[i][j] = Integer.parseInt(datos[j]); //recorre el el dato y lo castea como integrer
+                                }
+                            }
+                            matrices.add(matriz); //añade a la matriz al arreglo   
                         }
-                        matrices.add(matriz); //añade a la matriz al arreglo   
-
-                    }
-
-                    lector.close(); // se cierra el scanner por buenas practicas 
+                        // se cierra el scanner por buenas practicas
+                    } // se lee el numero totales de matrices
 
                     int [][] matrizC;
                     for(int indice=1; indice<totalMatrices;indice++){
@@ -166,8 +173,7 @@ public class LAB3_Munoz_Rojo {
 
                             // Se imprime la matriz para 
                             String nombre_archivo= "./salidaThread/salidaThread_"+n_archivo+".txt";
-                            System.out.println(nombre_archivo);
-                            try (FileWriter writer = new FileWriter(nombre_archivo, true)) {
+                            try (FileWriter writer = new FileWriter(nombre_archivo, false)) {
 
                                 writer.write( Fila(matrizC) +" "+ Columna(matrizC) + "\n");
                                 for (int[] fila : matrizC) {
