@@ -192,7 +192,7 @@ int main() {
     char **archivos = listarArchivos_tests("./pruebas", &numArchivos);
 
     // abrir CSV para registrar resuldos
-    FILE *csv = fopen("./measurements/C_measurements.csv", "w");
+    FILE *csv = fopen("./measurements/c_measurements.csv", "w");
     fprintf(csv, "archivo,wall_time-s,user_time-s,sys_time-s,cpu_total-s,percent_cpu,mem_rss-kb\n");
     
     // itero sobre la lista de nombres de los archivos
