@@ -23,6 +23,7 @@ La tarea es hacer un informe para responder una serie de preguntas sobre la dife
 ## Supuestos
 * NO habran matrices de 0x0
 * Todos lo archivos tendran al menos 2 matrices
+* Todos los archivos siguen el formato indicado, más se le agrega una linea vacía en el término de estos.
 
 
 
