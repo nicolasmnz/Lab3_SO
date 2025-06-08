@@ -40,7 +40,7 @@ run-bonus-c: c/LAB3_Munoz_Rojo_b
 run-java: javaprog
 	@echo "Ejecutando LAB3_Munoz_Rojo.java:"; $(JAVA) -cp java LAB3_Munoz_Rojo
 
-run-bonus-java: c/LAB3_Munoz_Rojo_b
+run-bonus-java: javaprog
 	@echo "Ejecutando LAB3_Munoz_Rojo_b.java:"; $(JAVA) -cp java LAB3_Munoz_Rojo_b
 
 
