@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <dirent.h>
+#include <limits.h> 
 #include <sys/types.h>
+#include <sys/stat.h> 
 #include <sys/resource.h>  
 #include <sys/wait.h>      
 
@@ -34,15 +36,20 @@ char **listarArchivos_tests(const char* rutaDir, int* numArchivos) {
     char **lista = (char**)malloc(sizeof(char *) * capacidad);
 
     struct dirent *archivo;
+    struct stat st;
     while ((archivo = readdir(dir)) != NULL) {
         // Saltar "." y ".."
         if (strcmp(archivo->d_name, ".") == 0 || strcmp(archivo->d_name, "..") == 0) continue;
         
-        // Obtenemos nombre del archivo
-        size_t lenName = strlen(archivo->d_name); // se obtiene el tamanio de nombre archivo
-        char *pathCompleto = malloc(lenName + 1);
+        // Construir ruta completa para verificar el tipo
+        char fullpath[PATH_MAX];
+        snprintf(fullpath, sizeof(fullpath), "%s/%s", rutaDir, archivo->d_name);
+        
+        if (stat(fullpath, &st) == -1) continue;   // Saltar si no se puede obtener info
+        if (!S_ISREG(st.st_mode)) continue;        // Solo archivos regulares (no carpetas)
 
-        sprintf(pathCompleto, "%s", archivo->d_name); // dar formato al nombre del archivo
+        // Obtenemos nombre del archivo
+        char *nombreArchivo = strdup(archivo->d_name);
 
         if (count >= capacidad) {
             // se agranda si no hay suficiente espacio con realloc
@@ -50,7 +57,7 @@ char **listarArchivos_tests(const char* rutaDir, int* numArchivos) {
             char **nuevaLista = realloc(lista, sizeof(char *) * capacidad);
             lista = nuevaLista;
         }
-        lista[count++] = pathCompleto; //entra en lista[count] y luego incrementa count
+        lista[count++] = nombreArchivo; //entra en lista[count] y luego incrementa count
     }
 
     closedir(dir);
@@ -98,7 +105,7 @@ void eliminarMatriz(int **Matriz, int rows) {
 
 int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, int columnB) {
     if (columnA != rowB) {
-        printf("Error: Dimesiones no compatibles");
+        printf("Error: Dimesiones no compatibles\n");
         return NULL;
     }
     // Reservar memoria para matriz resultante
@@ -137,7 +144,7 @@ int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, 
     }
     for (int i = 0; i < rowA; i++) {
         int elemC, rowC, columnC;
-        for (int j = 0; j < rowA; j++) {
+        for (int j = 0; j < columnB; j++) {
             read(from_child[i][0], &rowC, sizeof(int));
             read(from_child[i][0], &columnC, sizeof(int));
             read(from_child[i][0], &elemC, sizeof(int));
@@ -158,10 +165,8 @@ int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, 
 
 void escribirMatriz(int** matriz, int row, int column, const char* nombreArchivo) {
     // dar nombre formateado al archivo de salida
-    size_t len_nombreArchivo = strlen(nombreArchivo);
-    size_t len_ruta = strlen("./salidaFork/salidaFork_");
-    char *path = (char*)malloc(len_ruta + len_nombreArchivo);    //revisar
-    sprintf(path, "./salidaFork/salidaFork_%s", nombreArchivo);
+    char path[PATH_MAX];
+    snprintf(path, sizeof(path), "./salidaFork/salidaFork_%s", nombreArchivo);
 
     // crear archivo
     FILE *salida = fopen(path, "w");
@@ -193,13 +198,11 @@ int main() {
     // itero sobre la lista de nombres de los archivos
     for (int i = 0; i < numArchivos; i++) {
         // preparo ruta
-        char *carpeta = "./pruebas/";
-        size_t len_carpeta = strlen(carpeta);
+        const char *carpeta = "./pruebas/";
         const char *nombreArchivo = archivos[i];
-        size_t len_nombreArchivo = strlen(nombreArchivo);
 
-        char *path = (char*)malloc(len_carpeta + len_nombreArchivo);
-        sprintf(path, "%s%s", carpeta, nombreArchivo);
+        char path[PATH_MAX];
+        snprintf(path, sizeof(path), "%s%s", carpeta, nombreArchivo);
 
         // abro el archivo
         FILE *fptr;
@@ -227,43 +230,42 @@ int main() {
     
         // llamada a multMatriz con fork() y pipe()
         int **matrizC = multMatriz(matrizA, matrizB, m, n, p, q);
-    
+        // si error en multilicacion, saltar
+        if (matrizC == NULL) {
+            eliminarMatriz(matrizA, m);
+            eliminarMatriz(matrizB, p);
+            continue;
+        }
+
         // mediciones posteriores a la multiplicacion de matrices
         clock_gettime(CLOCK_MONOTONIC, &fin_wall);
         getrusage(RUSAGE_SELF, &uso_fin);
     
         // calculo de metricas
-        if (matrizC != NULL) {
-            double wall = tiempoEnSegundos(inicio_wall, fin_wall);
+        double wall = tiempoEnSegundos(inicio_wall, fin_wall);
+    
+        double cpu_user = (uso_fin.ru_utime.tv_sec - uso_inicio.ru_utime.tv_sec)
+                        + (uso_fin.ru_utime.tv_usec - uso_inicio.ru_utime.tv_usec) / 1e6;
+        double cpu_sys  = (uso_fin.ru_stime.tv_sec - uso_inicio.ru_stime.tv_sec)
+                        + (uso_fin.ru_stime.tv_usec - uso_inicio.ru_stime.tv_usec) / 1e6;
+        double cpu_total = cpu_sys + cpu_user;
+        double porc_cpu = (wall > 0) ? (100.0 * cpu_total/ wall) : 0.0;
+        long memoria_kb = uso_fin.ru_maxrss;
         
-            double cpu_user = (uso_fin.ru_utime.tv_sec - uso_inicio.ru_utime.tv_sec)
-                            + (uso_fin.ru_utime.tv_usec - uso_inicio.ru_utime.tv_usec) / 1e6;
-            double cpu_sys  = (uso_fin.ru_stime.tv_sec - uso_inicio.ru_stime.tv_sec)
-                            + (uso_fin.ru_stime.tv_usec - uso_inicio.ru_stime.tv_usec) / 1e6;
-            double cpu_total = cpu_sys + cpu_user;
-            double porc_cpu = (wall > 0) ? (100.0 * cpu_total/ wall) : 0.0;
-            long memoria_kb = uso_fin.ru_maxrss;
-            
-            // registrar mediciones
-            fprintf(csv, "%s,%.6f,%.6f,%.6f,%.6f,%.1f,%ld\n",
-                    path,
-                    wall,       // Tiempo real (wall clock)
-                    cpu_user,   // Tiempo CPU user
-                    cpu_sys,    // Tiempo CPU sys
-                    cpu_total,  // Tiempo CPU total
-                    porc_cpu,   // Porcentaje de uso aproximado de CPU
-                    memoria_kb  // Uso máximo de memoria (resident set size)
-            );
-        }
+        // registrar mediciones
+        fprintf(csv, "%s,%.6f,%.6f,%.6f,%.6f,%.1f,%ld\n",
+                path,
+                wall,       // Tiempo real (wall clock)
+                cpu_user,   // Tiempo CPU user
+                cpu_sys,    // Tiempo CPU sys
+                cpu_total,  // Tiempo CPU total
+                porc_cpu,   // Porcentaje de uso aproximado de CPU
+                memoria_kb  // Uso máximo de memoria (resident set size)
+        );
         
         // guardar matriz en salidasFork
-        if (matrizC != NULL) escribirMatriz(matrizC, m, q, nombreArchivo);
-
-        printMatriz(matrizA, m, n);
-        printMatriz(matrizB, p, q);
-        if (matrizC != NULL) printMatriz(matrizC, m, q);
+        escribirMatriz(matrizC, m, q, nombreArchivo);
         
-
         // liberar matrices
         eliminarMatriz(matrizA, m);
         eliminarMatriz(matrizB, p);

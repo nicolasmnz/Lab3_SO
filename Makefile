@@ -10,7 +10,7 @@ C_HDRS    := main.h main_bonus.h
 
 C_TARGETS := main main_bonus
 #-------------------------------------------
-.PHONY: all cc java run-c run-bonus-c run-java run-bonus-java clean
+.PHONY: all cc java run-c run-bonus-c run-java run-bonus-java clean clean-outputs
 
 all: cc java
 #------------------------------------------
@@ -43,3 +43,6 @@ run-java: $(JAVA_CLASSES)
 #-----------------------------------------
 clean:
 	rm -f *.o $(C_TARGETS) *.class
+
+clean-outputs:
+	rm -f ./salidaFork/*.txt ./salidaFork/bonus/*.txt || true

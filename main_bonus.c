@@ -68,6 +68,21 @@ int **leerMatriz(FILE *f, int *rows, int *columns) {
     return Matriz;
 }
 
+// 0 -> false
+// 1 -> true
+int esSimetrica(int** Matriz, int row, int column) {
+    // condicion fuerte: la matriz debe ser cuadrada (nxn) para ser simetrica
+    if (row != column) return 0;
+    
+    for (int i = 0; i < row; i++) {
+        for (int j = i + 1; j < column; j++) {
+            if (Matriz[i][j] != Matriz[j][i]) return 0;
+        }
+    }
+
+    return 1;
+}
+
 void escribirMatriz(int** Matriz, int row, int column, const char* nombreArchivo) {
     // dar nombre formateado al archivo de salida
     size_t len_nombreArchivo = strlen(nombreArchivo);
@@ -87,6 +102,10 @@ void escribirMatriz(int** Matriz, int row, int column, const char* nombreArchivo
         fprintf(salida, "\n");
     }
 
+    if (esSimetrica(Matriz, row, column)) {
+        fprintf(salida, "La matriz final es simetrica\n");
+    }
+
     fclose(salida);
 
     return;
@@ -94,7 +113,7 @@ void escribirMatriz(int** Matriz, int row, int column, const char* nombreArchivo
 
 int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, int columnB) {
     if (columnA != rowB) {
-        printf("Error: Dimesiones no compatibles");
+        printf("Error: Dimesiones no compatibles\n");
         return NULL;
     }
     // Reservar memoria para matriz resultante
@@ -133,7 +152,7 @@ int **multMatriz(int **MatrizA, int **MatrizB, int rowA, int columnA, int rowB, 
     }
     for (int i = 0; i < rowA; i++) {
         int elemC, rowC, columnC;
-        for (int j = 0; j < rowA; j++) {
+        for (int j = 0; j < columnB; j++) {
             read(from_child[i][0], &rowC, sizeof(int));
             read(from_child[i][0], &columnC, sizeof(int));
             read(from_child[i][0], &elemC, sizeof(int));
@@ -161,11 +180,6 @@ void eliminarMatriz(int **Matriz, int rows) {
     return;
 }
 
-// 0 -> false
-// 1 -> true
-/* int esSimetrica(int** matrizRes) {
-    
-}*/
 
 int main() {
     // busco todos los archivos de bonus
@@ -175,7 +189,7 @@ int main() {
     // itero sobre la lista de nombres de los archivos
     for (int i = 0; i < numArchivos; i++) {
         // preparo ruta
-        char *carpeta = "./pruebas/bonus";
+        const char *carpeta = "./pruebas/bonus";
         size_t len_carpeta = strlen(carpeta);
         const char *nombreArchivo = archivos[i];
         size_t len_nombreArchivo = strlen(nombreArchivo);
@@ -232,7 +246,7 @@ int main() {
 
         // escribir matriz en salidasFork/bonus
         if (matrizRes != NULL) escribirMatriz(matrizRes, m, q, nombreArchivo);
-
+                
         // liberar matrices
         eliminarMatriz(matrizA, m);
         eliminarMatriz(matrizB, p);
