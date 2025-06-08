@@ -193,7 +193,7 @@ int main() {
 
     // abrir CSV para registrar resuldos
     FILE *csv = fopen("./measurements/c_measurements.csv", "w");
-    fprintf(csv, "archivo,wall_time-s,user_time-s,sys_time-s,cpu_total-s,percent_cpu,mem_rss-kb\n");
+    fprintf(csv, "num_fila,wall_time-s,user_time-s,sys_time-s,cpu_total-s,percent_cpu,mem_rss-kb\n");
     
     // itero sobre la lista de nombres de los archivos
     for (int i = 0; i < numArchivos; i++) {
@@ -254,8 +254,8 @@ int main() {
         long memoria_kb = uso_fin.ru_maxrss;
         
         // registrar mediciones
-        fprintf(csv, "%s,%.6f,%.6f,%.6f,%.6f,%.1f,%ld\n",
-                path,
+        fprintf(csv, "%d,%.6f,%.6f,%.6f,%.6f,%.1f,%ld\n",
+                m,          // num_fila
                 wall,       // Tiempo real (wall clock)
                 cpu_user,   // Tiempo CPU user
                 cpu_sys,    // Tiempo CPU sys

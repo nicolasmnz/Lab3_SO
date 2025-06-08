@@ -2,12 +2,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.lang.Thread;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
 
 
 
@@ -166,11 +165,11 @@ public class LAB3_Munoz_Rojo {
                             double pctCpu   = (cpu_usado / tiempo_total) * 100;
 
                             // Se imprime la matriz para 
-                            String nombre_archivo= "salidaThread/salidaThread_"+n_archivo;
+                            String nombre_archivo= "./salidaThread/salidaThread_"+n_archivo+".txt";
                             System.out.println(nombre_archivo);
                             try (FileWriter writer = new FileWriter(nombre_archivo, true)) {
 
-                                writer.write("Las dimensiones de la matriz resultante es: "+ Fila(matrizC) +" "+ Columna(matrizC) + "\n");
+                                writer.write(Fila(matrizC) +" "+ Columna(matrizC) + "\n");
 
                                 for (int[] fila : matrizC) {
                                     for (int val : fila) {

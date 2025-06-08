@@ -1,46 +1,55 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-# Ajusta estas rutas a tus archivos CSV
-c_file = 'c_measurements.csv'
-java_file = 'java_measurements.csv'
+# Ruta de trabajo (mismo directorio del script)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Leer los datos
-c_df = pd.read_csv(c_file)
-java_df = pd.read_csv(java_file)
+# Archivos CSV
+c_path    = os.path.join(BASE_DIR, 'c_measurements.csv')
+java_path = os.path.join(BASE_DIR, 'java_measurements.csv')
 
-# Crear un índice de pruebas
+# Cargar datos
+c_df    = pd.read_csv(c_path)
+java_df = pd.read_csv(java_path)
+
+# Índice de prueba (0, 1, 2, …)
 pruebas = list(range(len(c_df)))
 
-# 1. Gráfica de tiempos de ejecución (wall_time-s)
+# 1) Tiempos de ejecución
 plt.figure()
-plt.plot(pruebas, c_df['wall_time-s'], label='C (forks + pipes)')
+plt.plot(pruebas, c_df['wall_time-s'], label='C (fork + pipe)')
 plt.plot(pruebas, java_df['wall_time-s'], label='Java (threads)')
 plt.xlabel('Índice de prueba')
 plt.ylabel('Tiempo de ejecución (s)')
-plt.title('Comparación de Tiempos de Ejecución')
+plt.title('Comparativa de Tiempos')
 plt.legend()
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(BASE_DIR, 'tiempos_comparativa.png'))
 
-# 2. Gráfica de uso de memoria (mem_rss-kb)
+# 2) Uso de memoria
 plt.figure()
-plt.plot(pruebas, c_df['mem_rss-kb'], label='C (forks + pipes)')
+plt.plot(pruebas, c_df['mem_rss-kb'], label='C (fork + pipe)')
 plt.plot(pruebas, java_df['mem_rss-kb'], label='Java (threads)')
 plt.xlabel('Índice de prueba')
 plt.ylabel('Memoria RSS (KB)')
-plt.title('Comparación de Uso de Memoria')
+plt.title('Comparativa de Memoria')
 plt.legend()
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(BASE_DIR, 'memoria_comparativa.png'))
 
-# 3. Gráfica de uso de CPU (percent_cpu)
+# 3) Uso de CPU
 plt.figure()
-plt.plot(pruebas, c_df['percent_cpu'], label='C (forks + pipes)')
+plt.plot(pruebas, c_df['percent_cpu'], label='C (fork + pipe)')
 plt.plot(pruebas, java_df['percent_cpu'], label='Java (threads)')
 plt.xlabel('Índice de prueba')
 plt.ylabel('Uso de CPU (%)')
-plt.title('Comparación de Uso de CPU')
+plt.title('Comparativa de CPU')
 plt.legend()
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(BASE_DIR, 'cpu_comparativa.png'))
+
+print("Gráficas generadas en:", BASE_DIR)
+print("  - tiempos_comparativa.png")
+print("  - memoria_comparativa.png")
+print("  - cpu_comparativa.png")
