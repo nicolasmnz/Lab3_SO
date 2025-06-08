@@ -1,5 +1,5 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef LAB3_MUNOZ_ROJO_H
+#define LAB3_MUNOZ_ROJO_H
 
 #include <stdio.h>
 #include <unistd.h>

@@ -10,7 +10,7 @@
 #include <sys/resource.h>  
 #include <sys/wait.h>      
 
-#include "./main.h"
+#include "./LAB3_Munoz_Rojo.h"
 
 /*void printMatriz(int **matriz, int rows, int columns) {
     printf("Matriz (%d x %d):\n", rows, columns);

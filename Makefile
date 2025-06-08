@@ -4,11 +4,11 @@ CFLAGS    := -Wall -Wextra -g
 JAVAC 	  := javac
 JAVA 	  := java
 #--------------------------------------------
-C_SRCS    := main.c main_bonus.c
+C_SRCS    := LAB3_Munoz_Rojo_b.c LAB3_Munoz_Rojo.c
 C_OBJS    := $(C_SRCS:.c=.o)
-C_HDRS    := main.h main_bonus.h
+C_HDRS    := LAB3_Munoz_Rojo_b.h LAB3_Munoz_Rojo.h
 
-C_TARGETS := main main_bonus
+C_TARGETS := LAB3_Munoz_Rojo_b LAB3_Munoz_Rojo
 #-------------------------------------------
 .PHONY: all cc java run-c run-bonus-c run-java run-bonus-java clean clean-outputs
 
