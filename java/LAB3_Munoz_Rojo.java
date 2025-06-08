@@ -50,7 +50,7 @@ public class LAB3_Munoz_Rojo {
         File carpetaReportes = new File("./measurements");
         if (!carpetaReportes.exists()) carpetaReportes.mkdirs();
             
-        File csv = new File("./measurements/Java_measurements.csv");
+        File csv = new File("./measurements/java_measurements.csv");
         boolean crearEncabezado = !csv.exists(); // si el archivo no existe, escribir encabezado
         
         try (FileWriter csvWriter = new FileWriter(csv, true)) {

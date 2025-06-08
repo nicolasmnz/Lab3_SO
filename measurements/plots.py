@@ -13,43 +13,76 @@ java_path = os.path.join(BASE_DIR, 'java_measurements.csv')
 c_df    = pd.read_csv(c_path)
 java_df = pd.read_csv(java_path)
 
-# Índice de prueba (0, 1, 2, …)
-pruebas = list(range(len(c_df)))
+# Parámetros de estilo comunes
+ALPHA = 0.5       # transparencia
+SIZE  = 15        # tamaño de marcador
+DPI   = 120       # resolución
+GRID_KWARGS = {
+    'linestyle': '--',
+    'linewidth': 0.5,
+    'alpha': 0.5
+}
 
-# 1) Tiempos de ejecución
-plt.figure()
-plt.plot(pruebas, c_df['wall_time-s'], label='C (fork + pipe)')
-plt.plot(pruebas, java_df['wall_time-s'], label='Java (threads)')
-plt.xlabel('Índice de prueba')
-plt.ylabel('Tiempo de ejecución (s)')
-plt.title('Comparativa de Tiempos')
-plt.legend()
-plt.tight_layout()
-plt.savefig(os.path.join(BASE_DIR, 'tiempos_comparativa.png'))
+def save_scatter(x, y1, y2, ylabel, title, fname):
+    plt.figure(dpi=DPI)
+    plt.scatter(x, y1,
+                label='C (fork + pipe)',
+                alpha=ALPHA,
+                s=SIZE,
+                linewidths=0)
+    plt.scatter(x, y2,
+                label='Java (threads)',
+                alpha=ALPHA,
+                s=SIZE,
+                linewidths=0)
+    plt.xlabel('Número de fila')
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.legend()
+    plt.grid(True, **GRID_KWARGS)
+    leg = plt.legend(
+    loc='upper left',               # posición ancla dentro de la figura
+    bbox_to_anchor=(1.02, 1),       # 1.02 en x saca la leyenda un poco a la derecha
+    borderaxespad=0                 # sin espacio extra entre ejes y caja
+)
+
+    plt.tight_layout(rect=[0, 0, 0.85, 1])  # deja un margen derecho para la leyenda
+    plt.tight_layout()
+    salida = os.path.join(BASE_DIR, fname)
+    plt.savefig(salida)
+    print(f"Guardado: {fname}")
+
+# Índice de prueba (o el campo que uses en X)
+x = c_df['num_fila']
+
+# 1) Tiempo de ejecución
+save_scatter(
+    x,
+    c_df['wall_time-s'],
+    java_df['wall_time-s'],
+    'Tiempo de ejecución (s)',
+    'Comparativa de Tiempos',
+    'tiempos_comparativa_scatter.png'
+)
 
 # 2) Uso de memoria
-plt.figure()
-plt.plot(pruebas, c_df['mem_rss-kb'], label='C (fork + pipe)')
-plt.plot(pruebas, java_df['mem_rss-kb'], label='Java (threads)')
-plt.xlabel('Índice de prueba')
-plt.ylabel('Memoria RSS (KB)')
-plt.title('Comparativa de Memoria')
-plt.legend()
-plt.tight_layout()
-plt.savefig(os.path.join(BASE_DIR, 'memoria_comparativa.png'))
+save_scatter(
+    x,
+    c_df['mem_rss-kb'],
+    java_df['mem_rss-kb'],
+    'Memoria RSS (KB)',
+    'Comparativa de Memoria',
+    'memoria_comparativa_scatter.png'
+)
 
 # 3) Uso de CPU
-plt.figure()
-plt.plot(pruebas, c_df['percent_cpu'], label='C (fork + pipe)')
-plt.plot(pruebas, java_df['percent_cpu'], label='Java (threads)')
-plt.xlabel('Índice de prueba')
-plt.ylabel('Uso de CPU (%)')
-plt.title('Comparativa de CPU')
-plt.legend()
-plt.tight_layout()
-plt.savefig(os.path.join(BASE_DIR, 'cpu_comparativa.png'))
+save_scatter(
+    x,
+    c_df['percent_cpu'],
+    java_df['percent_cpu'],
+    'Uso de CPU (%)',
+    'Comparativa de CPU',
+    'cpu_comparativa_scatter.png'
+)
 
-print("Gráficas generadas en:", BASE_DIR)
-print("  - tiempos_comparativa.png")
-print("  - memoria_comparativa.png")
-print("  - cpu_comparativa.png")
+print("\n¡Todas las gráficas generadas con éxito en:", BASE_DIR, "!")

@@ -111,7 +111,7 @@ void escribirMatriz(int** Matriz, int row, int column, const char* nombreArchivo
     }
 
     if (esSimetrica(Matriz, row, column)) {
-        fprintf(salida, "La matriz final es simetrica\n");
+        fprintf(salida, "Es simetrica\n");
     }
 
     fclose(salida);
