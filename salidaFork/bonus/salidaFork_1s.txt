@@ -1,4 +1,4 @@
 2 2
 50 110 
 110 251 
-La matriz final es simetrica
+Es simetrica

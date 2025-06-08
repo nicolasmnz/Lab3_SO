@@ -222,7 +222,6 @@ int main() {
 
         // leo la primera matriz -> matrizA 
         matrizA = leerMatriz(fptr, &m, &n);
-        printMatriz(matrizA, m, n);
 
         for (int j = 0; j < cantMatrices - 1 ; j++) {
             // guardar la matrizRes como matrizA y matrizres = NULL
@@ -237,7 +236,6 @@ int main() {
 
             // leer segunda matriz -> matrizB
             matrizB = leerMatriz(fptr, &p, &q);
-            printMatriz(matrizB, p, q);
             // llamada a multMatriz con fork() y pipe()
             matrizRes = multMatriz(matrizA, matrizB, m, n, p, q); // matrizRes (m x q)
 
