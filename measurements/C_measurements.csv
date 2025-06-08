@@ -1,5 +1,3 @@
 archivo,wall_time-s,user_time-s,sys_time-s,cpu_total-s,percent_cpu,mem_rss-kb
-./pruebas/entrada2.txt,0.001427,0.000608,0.000000,0.000608,42.6,2160
-./pruebas/entrada2.txt,0.001427,0.000608,0.000000,0.000608,42.6,2160
-./pruebas/entrada2.txt,0.001427,0.000608,0.000000,0.000608,42.6,2160
-./pruebas/entrada.txt,0.000859,0.000000,0.000646,0.000646,75.2,2160
+./pruebas/entrada2.txt,0.000691,0.000452,0.000000,0.000452,65.4,2476
+./pruebas/entrada.txt,0.001493,0.000915,0.000000,0.000915,61.3,2476

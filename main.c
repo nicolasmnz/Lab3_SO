@@ -10,8 +10,9 @@
 #include <sys/resource.h>  
 #include <sys/wait.h>      
 
+#include "./main.h"
 
-void printMatriz(int **matriz, int rows, int columns) {
+/*void printMatriz(int **matriz, int rows, int columns) {
     printf("Matriz (%d x %d):\n", rows, columns);
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++)
@@ -21,7 +22,7 @@ void printMatriz(int **matriz, int rows, int columns) {
         printf("\n");
     }
     return;
-}
+}*/
 
 double tiempoEnSegundos(struct timespec inicio, struct timespec fin) {
     return (fin.tv_sec - inicio.tv_sec) + (fin.tv_nsec - inicio.tv_nsec) / 1e9;
@@ -193,10 +194,10 @@ int main() {
     // abrir CSV para registrar resuldos
     FILE *csv = fopen("./measurements/C_measurements.csv", "w");
     fprintf(csv, "archivo,wall_time-s,user_time-s,sys_time-s,cpu_total-s,percent_cpu,mem_rss-kb\n");
-    fflush(csv); // se libera el buffer para no tener problemas con el fork, Header repetido
-
+    
     // itero sobre la lista de nombres de los archivos
     for (int i = 0; i < numArchivos; i++) {
+        fflush(csv); // se libera el buffer para no tener problemas con el fork, Header repetido
         // preparo ruta
         const char *carpeta = "./pruebas/";
         const char *nombreArchivo = archivos[i];

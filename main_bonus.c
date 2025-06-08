@@ -8,6 +8,8 @@
 #include <sys/resource.h>  
 #include <sys/wait.h>
 
+#include "./main_bonus.h"
+
 char **listarArchivos_tests(const char* rutaDir, int* numArchivos) {
     DIR *dir = opendir(rutaDir);
 
