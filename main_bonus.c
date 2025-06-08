@@ -10,6 +10,18 @@
 
 #include "./main_bonus.h"
 
+void printMatriz(int **matriz, int rows, int columns) {
+    printf("Matriz (%d x %d):\n", rows, columns);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++)
+        {
+            printf("%d ", matriz[i][j]);
+        }
+        printf("\n");
+    }
+    return;
+}
+
 char **listarArchivos_tests(const char* rutaDir, int* numArchivos) {
     DIR *dir = opendir(rutaDir);
 
@@ -45,11 +57,8 @@ char **listarArchivos_tests(const char* rutaDir, int* numArchivos) {
 }
 
 int **leerMatriz(FILE *f, int *rows, int *columns) {
-    char linea[100];
-
-    // leo la primera linea para definir rows y columns
-    fgets(linea, sizeof(linea), f);
-    sscanf(linea, "%d %d", rows, columns);
+    // Leer dimensiones 
+    fscanf(f, "%d %d", rows, columns);
 
     // Reservo memoria
     int **Matriz = (int **)malloc((*rows) * sizeof(int *));
@@ -59,11 +68,8 @@ int **leerMatriz(FILE *f, int *rows, int *columns) {
 
     // Obtener cada elemento de la fila por delimitadores
     for (int i = 0; i < (*rows); i++) {
-        fgets(linea, 100, f);
-        char *token = strtok(linea, " \t\r\n");
         for (int j = 0; j < (*columns); j++) {
-            Matriz[i][j] = atoi(token);
-            token = strtok(NULL, " \t\r\n");
+            fscanf(f, "%d", &Matriz[i][j]);
         }
     }
 
@@ -89,7 +95,7 @@ void escribirMatriz(int** Matriz, int row, int column, const char* nombreArchivo
     // dar nombre formateado al archivo de salida
     size_t len_nombreArchivo = strlen(nombreArchivo);
     size_t len_ruta = strlen("./salidaFork/bonus/salidaFork_");
-    char *path = (char*)malloc(len_ruta + len_nombreArchivo);    //revisar
+    char *path = (char*)malloc(len_ruta + len_nombreArchivo + 1);    //revisar
     sprintf(path, "./salidaFork/bonus/salidaFork_%s", nombreArchivo);
 
     // crear archivo
@@ -196,7 +202,7 @@ int main() {
         const char *nombreArchivo = archivos[i];
         size_t len_nombreArchivo = strlen(nombreArchivo);
 
-        char *path = (char*)malloc(len_carpeta + len_nombreArchivo);
+        char *path = (char*)malloc(len_carpeta + 1 + len_nombreArchivo + 1);
         sprintf(path, "%s/%s", carpeta, nombreArchivo);
 
         // abro el archivo
@@ -205,9 +211,7 @@ int main() {
 
         // tomo la cantidad de matrices
         int cantMatrices;
-        char linea[100];
-        fgets(linea, sizeof(linea), fptr);
-        sscanf(linea, "%d", &cantMatrices);
+        fscanf(fptr, "%d", &cantMatrices);
 
         // inicializo para poder borrar despues las matrices
         int m, n;
@@ -218,24 +222,22 @@ int main() {
 
         // leo la primera matriz -> matrizA 
         matrizA = leerMatriz(fptr, &m, &n);
+        printMatriz(matrizA, m, n);
 
         for (int j = 0; j < cantMatrices - 1 ; j++) {
             // guardar la matrizRes como matrizA y matrizres = NULL
             if (j > 0) {
                 int ** matrizAux = matrizA;
                 eliminarMatriz(matrizAux, m);
+                eliminarMatriz(matrizB, p);
                 n = q; // reajuste con la dimension 
                 matrizA = matrizRes;
                 matrizRes = NULL;
             }
 
-            // dado la linea vacia
-            char linea[100];
-            fgets(linea, sizeof(linea), fptr);
-
             // leer segunda matriz -> matrizB
             matrizB = leerMatriz(fptr, &p, &q);
-            
+            printMatriz(matrizB, p, q);
             // llamada a multMatriz con fork() y pipe()
             matrizRes = multMatriz(matrizA, matrizB, m, n, p, q); // matrizRes (m x q)
 
