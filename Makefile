@@ -50,6 +50,7 @@ clean:
 
 clean-outputs:
 	rm -f ./salidaFork/*.txt ./salidaFork/bonus/*.txt || true
+	rm -f ./salidaThread/*.txt ./salidaThread/bonus/*.txt || true
 #-------------------------------------------
 help:
 	@echo "Uso: make [target]"
