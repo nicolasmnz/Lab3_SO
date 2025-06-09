@@ -22,13 +22,15 @@ La tarea es hacer un informe para responder una serie de preguntas sobre la dife
 * Usando librerias de lecturas de archivos vamos a extraer multiples matrices 
 * Se hace una comprobacion de las dimensiones de las matrices.
 * Usando `Fork()` o `Thread` dependiendo del caso para resolver una o multiples filas 
-* Usando librerias para por medir el tiempo de ejecucion de la matriz 
+* Usando librerias para por medir el tiempo de ejecucion de la matriz
 
 ## Supuestos
 * NO habran matrices de 0x0
 * Todos lo archivos tendran al menos 2 matrices
-* Todos los archivos siguen el formato indicado, más se le agrega una linea vacía en el término de estos.
-* Para la ejecucion del programa originales sin bonus estas asusmnen que el numero de 
+* Todos los archivos siguen el formato indicado en la tarea.
+* Para la ejecucion de los programas originales (no bonus) los casos de pruebas deben iniciar directamente con la primera matriz
+* La carpetas de salidaThread y salidaFork deben contener el una subcarpeta llamada bonus 
+
 
 
 
@@ -54,9 +56,6 @@ La tarea es hacer un informe para responder una serie de preguntas sobre la dife
 	clean             Elimina objetos, binarios y clases compiladas
 	clean-outputs     Elimina archivos de salida generados
 	help              Muestra esta ayuda
-
-
-make run
 ```
 ## Estructura
 ```
@@ -73,4 +72,5 @@ make run
 ├──salidaThreard #contiene una cartepa llama en bonus y es donde se guarda los archivos con las respuestas
 ├──measurements
 ├── Makefile               # Reglas de compilación y ejecución
+├── LAB_3_Munoz_Rojo_informe.pdf # Informe solicitado en la tarea 
 └── README.md              # Este documento
