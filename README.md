@@ -57,6 +57,8 @@ make run
   ├── LAB3_Munoz_Rojo.java   # Código fuente principal en java
   ├── LAB3_Munoz_Rojo_b.java   # Código fuente principal en java del bonus
 ├──Pruebas
+├──salidaFork #contiene una cartepa llama en bonus y es donde se guarda los archivos con las respuestas
+├──salidaThreard #contiene una cartepa llama en bonus y es donde se guarda los archivos con las respuestas
 ├──measurements
 ├── Makefile               # Reglas de compilación y ejecución
 └── README.md              # Este documento
