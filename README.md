@@ -43,7 +43,19 @@ La tarea es hacer un informe para responder una serie de preguntas sobre la dife
 
 ## Ejecutar
 ```
-# Ejecución (y compilación si se requiere)
+# Ejecución (y compilación si se requiere) con los siguientes comandos
+	all               Compila C y Java
+	cprog             Sólo compila el código C
+	javaprog          Sólo compila el código Java"
+	run-c             Ejecuta el programa principal en C
+	run-bonus-c       Ejecuta el programa bonus en C
+	run-java          Ejecuta el programa principal en Java
+	run-bonus-java    Ejecuta el programa bonus en Java
+	clean             Elimina objetos, binarios y clases compiladas
+	clean-outputs     Elimina archivos de salida generados
+	help              Muestra esta ayuda
+
+
 make run
 ```
 ## Estructura
