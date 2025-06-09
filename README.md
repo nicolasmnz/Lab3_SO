@@ -29,7 +29,8 @@ La tarea es hacer un informe para responder una serie de preguntas sobre la dife
 * Todos lo archivos tendran al menos 2 matrices
 * Todos los archivos siguen el formato indicado en la tarea.
 * Para la ejecucion de los programas originales (no bonus) los casos de pruebas deben iniciar directamente con la primera matriz
-* La carpetas de salidaThread y salidaFork deben contener el una subcarpeta llamada bonus 
+* La carpetas de salidaThread y salidaFork deben contener el una subcarpeta llamada bonus
+* Los nombres de los archivos de pruebas deben ser "numero".txt y los del bonus deben estar en la carpeta .pruebas.bonus con el mismo nombre 
 
 
 
@@ -68,8 +69,9 @@ La tarea es hacer un informe para responder una serie de preguntas sobre la dife
   ├── LAB3_Munoz_Rojo.java   # Código fuente principal en java
   ├── LAB3_Munoz_Rojo_b.java   # Código fuente principal en java del bonus
 ├──Pruebas
-├──salidaFork #contiene una cartepa llama en bonus y es donde se guarda los archivos con las respuestas
-├──salidaThreard #contiene una cartepa llama en bonus y es donde se guarda los archivos con las respuestas
+   ├──bonus
+├──salidaFork #contiene una carpeta llama en bonus y es donde se guarda los archivos con las respuestas
+├──salidaThreard #contiene una carpeta llama en bonus y es donde se guarda los archivos con las respuestas
 ├──measurements
 ├── Makefile               # Reglas de compilación y ejecución
 ├── LAB_3_Munoz_Rojo_informe.pdf # Informe solicitado en la tarea 
