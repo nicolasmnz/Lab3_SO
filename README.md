@@ -7,6 +7,10 @@ Nombre: Nicolás Muñoz Ramírez   - 202104641-0
 La tarea es hacer un informe para responder una serie de preguntas sobre la diferencias entre el uso `Fork()` y el `Thread()` para multiplicar matrices. Usandos diferntes codigos para poder comparar la efeciencia de estos diferentes metodos.
 ## Contenido
 * `LAB3_Munoz_Rojo.c` - Código fuente principal en C
+* `LAB3_Munoz_Rojo_b.c` - Código fuente principal del bonus en C
+* `LAB3_Munoz_Rojo.h` - Código fuente principal en h
+* `LAB3_Munoz_Rojo_b.h` - Código fuente principal en h
+  
 * `LAB3_Munoz_Rojo.java` - Código fuente principal en java
 * `LAB3_Munoz_Rojo_b.java` - Código fuente principal para el Bonus en java
 * `Makefile` - Script de compilación (`make`, `make run`, `make clean`)
@@ -45,7 +49,6 @@ make run
 ## Estructura
 ```
 ├── c
-├──Pruebas
   ├── LAB3_Munoz_Rojo.c      # Lógica principal
   ├──LAB3_Munoz_Rojo.h
   ├──LAB3_Munoz_Rojo_b.c
@@ -53,7 +56,7 @@ make run
 ├── java
   ├── LAB3_Munoz_Rojo.java   # Código fuente principal en java
   ├── LAB3_Munoz_Rojo_b.java   # Código fuente principal en java del bonus
-├──
+├──Pruebas
 ├──measurements
 ├── Makefile               # Reglas de compilación y ejecución
 └── README.md              # Este documento
